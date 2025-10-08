@@ -5,10 +5,32 @@
   <title>File Upload</title>
 </head>
 <body>
-  <h1>Upload a File to Collection "nccd"</h1>
+  <h1>Upload a File to a Collection</h1>
   <form id="uploadForm">
+    <input type="text" id="collectionName" name="collectionName" placeholder="name" value="" required />
     <input type="file" id="fileInput" name="file" required />
     <button type="submit">Upload</button>
+    &nbsp;
+    <label for="dryRun">Dry Run (do not save to DB)</label>
+    <input type="checkbox" id="dryRun" />
+    <table>
+      <tr><th>From</th><th>To</th><th>Ref</th></tr>
+      <tr>
+        <td><input name="sectionFrom" type="text" /></td>
+        <td><input name="sectionTo" type="text" /></td>
+        <td><input name="sectionRef" type="text" /></td>
+      </tr>
+      <tr>
+        <td><input name="sectionFrom" type="text" /></td>
+        <td><input name="sectionTo" type="text" /></td>
+        <td><input name="sectionRef" type="text" /></td>
+      </tr>
+      <tr>
+        <td><input name="sectionFrom" type="text" /></td>
+        <td><input name="sectionTo" type="text" /></td>
+        <td><input name="sectionRef" type="text" /></td>
+      </tr>
+    </table>
   </form>
   <pre id="result"></pre>
   <script>
@@ -17,15 +39,38 @@
 
     form.addEventListener('submit', async (e) => {
       e.preventDefault();
+      const collectionName = document.getElementById('collectionName').value.replace(/\s+/g, '');
+      if (!collectionName) return alert('Collection name is required');
+
       const fileInput = document.getElementById('fileInput');
       const file = fileInput.files[0];
-      if (!file) return;
+      if (!file) return alert('Please select a file');
 
       const formData = new FormData();
       formData.append('file', file);
 
+      const dryRun = document.getElementById('dryRun').checked;
+      formData.append('dryRun', dryRun);
+
+      const sectionFrom = document.getElementsByName('sectionFrom');
+      const sectionTo = document.getElementsByName('sectionTo');
+      const sectionRef = document.getElementsByName('sectionRef');
+      const sections = [];
+      for (let i = 0; i < sectionFrom.length; i++) {
+        if (sectionFrom[i].value || sectionTo[i].value || sectionRef[i].value) {
+          sections.push({
+            from: sectionFrom[i].value || null,
+            to: sectionTo[i].value || null,
+            ref: sectionRef[i].value || null,
+          });
+        }
+      }
+      if (sections.length > 0) {
+        formData.append('sections', JSON.stringify(sections));
+      }
+      
       try {
-        const res = await fetch('http://localhost:3000/db-client/collections/nccd/upload', {
+        const res = await fetch(`http://localhost:3000/collections/${collectionName}/upload`, {
           method: 'POST',
           body: formData,
         });

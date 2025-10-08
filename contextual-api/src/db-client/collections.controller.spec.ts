@@ -1,19 +1,19 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { DbClientController } from './db-client.controller';
+import { CollectionsController } from './collections.controller';
 import { DbClient } from './db-client';
 
-describe('DbClientController', () => {
-  let controller: DbClientController;
+describe('CollectionsController', () => {
+  let controller: CollectionsController;
   let dbClientMock: { getClient: jest.Mock };
 
   beforeEach(async () => {
     dbClientMock = { getClient: jest.fn() };
     const module: TestingModule = await Test.createTestingModule({
-      controllers: [DbClientController],
+      controllers: [CollectionsController],
       providers: [{ provide: DbClient, useValue: dbClientMock }],
     }).compile();
 
-    controller = module.get<DbClientController>(DbClientController);
+    controller = module.get<CollectionsController>(CollectionsController);
   });
 
   it('should be defined', () => {
