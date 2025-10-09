@@ -3,6 +3,11 @@
 <head>
   <meta charset="UTF-8">
   <title>File Upload</title>
+  <style>
+    input[type="text"] {
+      width: 300px;
+    }
+  </style>
 </head>
 <body>
   <h1>Upload a File to a Collection</h1>
@@ -13,7 +18,7 @@
     &nbsp;
     <label for="dryRun">Dry Run (do not save to DB)</label>
     <input type="checkbox" id="dryRun" />
-    <table>
+    <table id="sectionsTable">
       <tr><th>From</th><th>To</th><th>Ref</th></tr>
       <tr>
         <td><input name="sectionFrom" type="text" /></td>
@@ -31,6 +36,7 @@
         <td><input name="sectionRef" type="text" /></td>
       </tr>
     </table>
+    <button type="button" onclick="addSectionRow()">Add Section</button>
   </form>
   <pre id="result"></pre>
   <script>
@@ -80,6 +86,16 @@
         result.textContent = 'Upload failed: ' + err;
       }
     });
+    function addSectionRow() {
+      const table = document.getElementById('sectionsTable');
+      const row = table.insertRow();
+      const cell1 = row.insertCell(0);
+      const cell2 = row.insertCell(1);
+      const cell3 = row.insertCell(2);
+      cell1.innerHTML = '<input name="sectionFrom" type="text" />';
+      cell2.innerHTML = '<input name="sectionTo" type="text" />';
+      cell3.innerHTML = '<input name="sectionRef" type="text" />';
+    }
   </script>
 </body>
 </html>

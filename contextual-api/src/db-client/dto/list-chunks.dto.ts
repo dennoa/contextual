@@ -1,11 +1,8 @@
-import { IsNumberString, IsOptional } from 'class-validator';
+import { IsOptional, IsString } from 'class-validator';
+import { PaginationDto } from './pagination.dto';
 
-export class ListChunksDto {
-  @IsNumberString()
+export class ListChunksDto extends PaginationDto {
+  @IsString()
   @IsOptional()
-  limit?: number;
-
-  @IsNumberString()
-  @IsOptional()
-  offset?: number;
+  source?: string;
 }

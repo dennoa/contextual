@@ -50,10 +50,10 @@ fetch('http://localhost:3000/collections/nccd/upload', {
 
 ## list chunks in a collection
 
-Can optionally specify offset and limit.
+Can optionally specify offset, limit and source.
 
 ```js
-fetch('http://localhost:3000/collections/nccd/chunks?offset=0&limit=100', {
+fetch('http://localhost:3000/collections/nccd/chunks?offset=0&limit=100&source=test-pdf.pdf', {
   method: 'GET',
   headers: { 'Content-Type': 'application/json' }
 }).then(res => res.json()).then(json => console.log(json))
@@ -66,6 +66,15 @@ Can optionally specify offset and limit.
 ```js
 fetch(`http://localhost:3000/collections/nccd/neartext?text=${encodeURIComponent('how is NCCD data used')}`, {
   method: 'GET',
+  headers: { 'Content-Type': 'application/json' }
+}).then(res => res.json()).then(json => console.log(json))
+```
+
+## delete chunks in a collection for a specified source
+
+```js
+fetch('http://localhost:3000/collections/nccd/chunks?source=test-pdf.pdf', {
+  method: 'DELETE',
   headers: { 'Content-Type': 'application/json' }
 }).then(res => res.json()).then(json => console.log(json))
 ```

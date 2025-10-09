@@ -4,7 +4,6 @@ import {
   Controller,
   Delete,
   Get,
-  Logger,
   NotFoundException,
   Param,
   Post,
@@ -19,10 +18,9 @@ import { CreateCollectionDto } from './dto/create-collection.dto';
 import { ListChunksDto } from './dto/list-chunks.dto';
 import { UploadFileDto } from './dto/upload-file.dto';
 import { ListChunksNearestDto } from './dto/list-chunks-nearest.dto';
-import { Operator } from 'weaviate-client';
-import { FilterTarget } from 'node_modules/weaviate-client/dist/node/cjs/proto/v1/base';
 import { DeleteChunksBySourceDto } from './dto/delete-chunks-by-source.dto';
-import { toPascalCase } from 'src/utils/string-utils';
+import { toPascalCase } from '../utils/string-utils';
+import { whereSource } from '../utils/query-utils';
 
 @Controller('collections')
 export class CollectionsController {
@@ -115,7 +113,6 @@ export class CollectionsController {
       sections: dto.sections,
     };
     const chunks = await this.chunkly.chunkItUp(docOpts);
-    Logger.log(`Dry run: ${dto.dryRun}, ${typeof dto.dryRun}`);
     if (!dto.dryRun) {
       await this.deleteChunksBySource(anyName, { source: docOpts.source });
       const collection = client.collections.use(name);
@@ -141,8 +138,9 @@ export class CollectionsController {
     }
     const offset = dto.offset ?? 0;
     const limit = Math.min(dto.limit ?? 10, 100);
+    const filters = dto.source ? whereSource(dto.source) : undefined;
     const collection = client.collections.use(name);
-    const chunks = await collection.query.fetchObjects({ offset, limit, returnMetadata: 'all' });
+    const chunks = await collection.query.fetchObjects({ offset, limit, filters, returnMetadata: 'all' });
     return chunks;
   }
 
@@ -163,11 +161,8 @@ export class CollectionsController {
   async deleteChunksBySource(@Param('name') anyName: string, @Query() dto: DeleteChunksBySourceDto) {
     const { name, client, exists } = await this.getCollectionClient(anyName);
     if (exists) {
-      const operator: Operator = 'Equal';
-      const target: FilterTarget = { property: 'source' };
-      const where = { operator, target, value: dto.source };
       const collection = client.collections.use(name);
-      await collection.data.deleteMany(where);
+      await collection.data.deleteMany(whereSource(dto.source));
     }
     return { name };
   }
