@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Prompt Context</title>
+  <style>
+    input {
+      margin-bottom: 2px;
+    }
+    input:read-only {
+      border: none;
+    }
+    input[id="prompt"] {
+      width: 1200px;
+    }
+    input[id="sources"] {
+      width: 1200px;
+    }
+  </style>
+</head>
+<body>
+  <h1>Get the prompt context</h1>
+  <form id="promptForm">
+    <input type="text" id="collectionName" name="collectionName" placeholder="Collection Name" value="" required />
+    <br/>
+    <input type="text" id="prompt" name="prompt" value="" placeholder="Your query about NCCD goes here" />
+    <br/>
+    <button type="submit">Go</button>
+  </form>
+  <label>Distances:</label>&nbsp;
+  <input type="text" id="distances" name="distances" value="" readonly />
+  <br/>
+  <label>Certainty:</label>&nbsp;
+  <input type="text" id="certainties" name="certainties" value="" readonly />
+  <br/>
+  <label>Sources:</label>&nbsp;
+  <input type="text" id="sources" name="sources" value="" readonly />
+  <br/>
+  <label>Context:</label>
+  <p id="result"></p>
+  <script>
+    const form = document.getElementById('promptForm');
+    const result = document.getElementById('result');
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const collectionName = document.getElementById('collectionName').value.replace(/\s+/g, '');
+      if (!collectionName) return alert('Collection name is required');
+      const prompt = document.getElementById('prompt').value.trim();
+      if (!prompt) return alert('Prompt is required');
+      
+      try {
+        const res = await fetch(`http://localhost:3000/collections/${collectionName}/neartext?text=${encodeURIComponent(prompt)}`, {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+        });
+        const data = await res.json();
+        const top4 = data.objects.slice(0, 4);
+        document.getElementById('distances').value = top4.map(item => item.metadata.distance.toFixed(3)).join(', ');
+        document.getElementById('certainties').value = top4.map(item => item.metadata.certainty.toFixed(3)).join(', ');
+        document.getElementById('sources').value = top4.map(item => [item.properties.source, item.properties.ref].join('#')).join(', ');
+        result.textContent = top4.map(item => item.properties.text).join(' ');
+      } catch (err) {
+        result.textContent = 'Something went wrong: ' + err;
+      }
+    });
+  </script>
+</body>
+</html>
