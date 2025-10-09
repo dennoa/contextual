@@ -16,6 +16,14 @@
     input[id="sources"] {
       width: 1200px;
     }
+    label {
+      font-weight: bold;
+      margin-top: 4px;
+      margin-bottom: 4px;
+    }
+    p {
+      margin-top: 0px;
+    }
   </style>
 </head>
 <body>
@@ -24,16 +32,15 @@
     <input type="text" id="collectionName" name="collectionName" placeholder="Collection Name" value="" required />
     <br/>
     <input type="text" id="prompt" name="prompt" value="" placeholder="Your query about NCCD goes here" />
-    <br/>
     <button type="submit">Go</button>
   </form>
-  <label>Distances:</label>&nbsp;
+  <label>Distances:</label>
   <input type="text" id="distances" name="distances" value="" readonly />
   <br/>
-  <label>Certainty:</label>&nbsp;
+  <label>Certainty:</label>
   <input type="text" id="certainties" name="certainties" value="" readonly />
   <br/>
-  <label>Sources:</label>&nbsp;
+  <label>Sources:</label>
   <input type="text" id="sources" name="sources" value="" readonly />
   <br/>
   <label>Context:</label>
