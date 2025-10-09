@@ -58,11 +58,11 @@
       const sections = [];
       for (let i = 0; i < sectionFrom.length; i++) {
         if (sectionFrom[i].value || sectionTo[i].value || sectionRef[i].value) {
-          sections.push({
-            from: sectionFrom[i].value || null,
-            to: sectionTo[i].value || null,
-            ref: sectionRef[i].value || null,
-          });
+          const section = {};
+          if (sectionFrom[i].value) section.from = sectionFrom[i].value;
+          if (sectionTo[i].value) section.to = sectionTo[i].value;
+          if (sectionRef[i].value) section.ref = sectionRef[i].value;
+          sections.push(section);
         }
       }
       if (sections.length > 0) {

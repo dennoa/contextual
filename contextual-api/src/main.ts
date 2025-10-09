@@ -6,7 +6,7 @@ import { DbClient } from './db-client/db-client';
 const port = parseInt(process.env.CONTEXTUAL_PORT ?? '3000');
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
-  app.useGlobalPipes(new ValidationPipe());
+  app.useGlobalPipes(new ValidationPipe({ transform: true }));
   const client = await app.get(DbClient).getClient();
   const collections = await client.collections.listAll();
   collections.forEach((col) => Logger.log(`Found collection: ${col.name}`));
