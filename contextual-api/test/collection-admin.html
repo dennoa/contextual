@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Collection Admin</title>
+  <style>
+    input[type="text"] {
+      width: 300px;
+    }
+    button[type="button"] {
+      margin-left: 4px;
+    }
+  </style>
+</head>
+<body>
+  <h1>Collection Admin</h1>
+  <form id="adminForm">
+    <input type="text" id="collectionName" name="collectionName" placeholder="Collection Name" value="" required />
+    <button type="button" id="createCollection">Create</button>
+    <button type="button" id="deleteCollection">Delete</button>
+  </form>
+  <code id="result"></code>
+  <script>
+    const result = document.getElementById('result');
+
+    document.getElementById('createCollection').onclick = async () => {
+      console.log('createCollection called');
+      const name = document.getElementById('collectionName').value.replace(/\s+/g, '');
+      if (!name) return alert('Collection name is required');
+      
+      try {
+        const res = await fetch('http://localhost:3000/collections', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ name }),
+        });
+        const data = await res.json();
+        result.textContent = JSON.stringify(data);
+      } catch (err) {
+        result.textContent = 'Something went wrong: ' + err;
+      }
+    };
+
+    document.getElementById('deleteCollection').onclick = async () => {
+      const name = document.getElementById('collectionName').value.replace(/\s+/g, '');
+      if (!name) return alert('Collection name is required');
+      
+      try {
+        const res = await fetch(`http://localhost:3000/collections/${name}`, {
+          method: 'DELETE',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+        });
+        const data = await res.json();
+        result.textContent = JSON.stringify(data);
+      } catch (err) {
+        result.textContent = 'Something went wrong: ' + err;
+      }
+    };
+  </script>
+</body>
+</html>

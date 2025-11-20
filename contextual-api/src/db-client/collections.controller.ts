@@ -110,6 +110,7 @@ export class CollectionsController {
       type: this.getFileType(file.mimetype),
       source: file.originalname,
       buffer: file.buffer,
+      conversions: dto.conversions,
       sections: dto.sections,
     };
     const chunks = await this.chunkly.chunkItUp(docOpts);

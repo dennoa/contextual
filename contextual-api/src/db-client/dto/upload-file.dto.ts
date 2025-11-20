@@ -1,6 +1,14 @@
 import { Transform, Type } from 'class-transformer';
 import { IsArray, IsBoolean, IsOptional, IsString, ValidateNested } from 'class-validator';
 
+export class UploadFileDocumentConversionsDto {
+  @IsString()
+  from: string;
+
+  @IsString()
+  to: string;
+}
+
 export class UploadFileDocumentSectionsDto {
   @IsOptional()
   @IsString()
@@ -16,6 +24,22 @@ export class UploadFileDocumentSectionsDto {
 }
 
 export class UploadFileDto {
+  @IsOptional()
+  @IsArray()
+  @ValidateNested({ each: true })
+  @Type(() => UploadFileDocumentConversionsDto)
+  @Transform(({ value }) => {
+    if (typeof value === 'string') {
+      try {
+        return JSON.parse(value) as UploadFileDocumentConversionsDto;
+      } catch {
+        return value;
+      }
+    }
+    return value as UploadFileDocumentConversionsDto[];
+  })
+  conversions?: UploadFileDocumentConversionsDto[];
+
   @IsOptional()
   @IsArray()
   @ValidateNested({ each: true })

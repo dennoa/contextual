@@ -7,6 +7,14 @@
     input[type="text"] {
       width: 300px;
     }
+    /* Allow the pre block to wrap long lines instead of overflowing */
+    pre#result {
+      white-space: pre-wrap;    /* preserve newlines, but allow wrapping */
+      overflow-wrap: anywhere;  /* break long words if necessary */
+      word-break: break-word;   /* fallback for some browsers */
+      max-width: 100%;          /* don't exceed container width */
+      box-sizing: border-box;
+    }
   </style>
 </head>
 <body>
@@ -18,8 +26,24 @@
     &nbsp;
     <label for="dryRun">Dry Run (do not save to DB)</label>
     <input type="checkbox" id="dryRun" />
+    <table id="conversionsTable">
+      <tr><th>Convert From</th><th>To</th></tr>
+      <tr>
+        <td><input name="conversionFrom" type="text" /></td>
+        <td><input name="conversionTo" type="text" /></td>
+      </tr>
+      <tr>
+        <td><input name="conversionFrom" type="text" /></td>
+        <td><input name="conversionTo" type="text" /></td>
+      </tr>
+      <tr>
+        <td><input name="conversionFrom" type="text" /></td>
+        <td><input name="conversionTo" type="text" /></td>
+      </tr>
+    </table>
+    <button type="button" onclick="addConversionRow()">Add Conversion</button>
     <table id="sectionsTable">
-      <tr><th>From</th><th>To</th><th>Ref</th></tr>
+      <tr><th>Start From</th><th>End At</th><th>Ref</th></tr>
       <tr>
         <td><input name="sectionFrom" type="text" /></td>
         <td><input name="sectionTo" type="text" /></td>
@@ -58,6 +82,21 @@
       const dryRun = document.getElementById('dryRun').checked;
       formData.append('dryRun', dryRun);
 
+      const conversionFrom = document.getElementsByName('conversionFrom');
+      const conversionTo = document.getElementsByName('conversionTo');
+      const conversions = [];
+      for (let i = 0; i < conversionFrom.length; i++) {
+        if (conversionFrom[i].value || conversionTo[i].value) {
+          const conversion = {};
+          conversion.from = conversionFrom[i].value || '';
+          conversion.to = conversionTo[i].value || '';
+          conversions.push(conversion);
+        }
+      }
+      if (conversions.length > 0) {
+        formData.append('conversions', JSON.stringify(conversions));
+      }
+      
       const sectionFrom = document.getElementsByName('sectionFrom');
       const sectionTo = document.getElementsByName('sectionTo');
       const sectionRef = document.getElementsByName('sectionRef');
@@ -86,6 +125,14 @@
         result.textContent = 'Upload failed: ' + err;
       }
     });
+    function addConversionRow() {
+      const table = document.getElementById('conversionsTable');
+      const row = table.insertRow();
+      const cell1 = row.insertCell(0);
+      const cell2 = row.insertCell(1);
+      cell1.innerHTML = '<input name="conversionFrom" type="text" />';
+      cell2.innerHTML = '<input name="conversionTo" type="text" />';
+    }
     function addSectionRow() {
       const table = document.getElementById('sectionsTable');
       const row = table.insertRow();

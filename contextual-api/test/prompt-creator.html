@@ -10,6 +10,9 @@
     input:read-only {
       border: none;
     }
+    input[id="collectionName"] {
+      width: 300px;
+    }
     input[id="prompt"] {
       width: 1200px;
     }
@@ -21,8 +24,12 @@
       margin-top: 4px;
       margin-bottom: 4px;
     }
-    p {
-      margin-top: 0px;
+    pre#result {
+      white-space: pre-wrap;    /* preserve newlines, but allow wrapping */
+      overflow-wrap: anywhere;  /* break long words if necessary */
+      word-break: break-word;   /* fallback for some browsers */
+      max-width: 100%;          /* don't exceed container width */
+      box-sizing: border-box;
     }
   </style>
 </head>
@@ -31,7 +38,7 @@
   <form id="promptForm">
     <input type="text" id="collectionName" name="collectionName" placeholder="Collection Name" value="" required />
     <br/>
-    <input type="text" id="prompt" name="prompt" value="" placeholder="Your query about NCCD goes here" />
+    <input type="text" id="prompt" name="prompt" value="" placeholder="Your query goes here" />
     <button type="submit">Go</button>
   </form>
   <label>Distances:</label>
@@ -44,7 +51,7 @@
   <input type="text" id="sources" name="sources" value="" readonly />
   <br/>
   <label>Context:</label>
-  <p id="result"></p>
+  <pre id="result"></pre>
   <script>
     const form = document.getElementById('promptForm');
     const result = document.getElementById('result');
@@ -68,7 +75,7 @@
         document.getElementById('distances').value = top4.map(item => item.metadata.distance.toFixed(3)).join(', ');
         document.getElementById('certainties').value = top4.map(item => item.metadata.certainty.toFixed(3)).join(', ');
         document.getElementById('sources').value = top4.map(item => [item.properties.source, item.properties.ref].join('#')).join(', ');
-        result.textContent = top4.map(item => item.properties.text).join(' ');
+        result.textContent = top4.map(item => item.properties.text).join('\n---\n');
       } catch (err) {
         result.textContent = 'Something went wrong: ' + err;
       }
